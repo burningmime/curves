@@ -36,14 +36,14 @@ namespace burningmime.curves
         /// length of curve before each point (so, arclen[0] = 0, arclen[1] = distance(pts[0], pts[1]),
         /// arclen[2] = arclen[1] + distance(pts[1], pts[2]) ... arclen[n -1] = length of the entire curve, etc).
         /// </summary>
-        protected readonly List<FLOAT> _arclen = new List<float>(256);
+        protected readonly List<FLOAT> _arclen = new List<FLOAT>(256);
 
         /// <summary>
         /// current parametrization of the curve. When fitting, u[i] is the pameterization for the point in pts[first + i]. This is
         /// an optimization for CurveBuilder, since it might not need to allocate as big of a _u as is nesescary to hold the whole
         /// curve.
         /// </summary>
-        protected readonly List<FLOAT> _u = new List<float>(256);
+        protected readonly List<FLOAT> _u = new List<FLOAT>(256);
 
         /// <summary>
         /// maximum squared error before we split the curve
