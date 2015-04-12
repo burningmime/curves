@@ -1,0 +1,50 @@
+﻿<UserControl 
+  x:Class="burningmime.curves.sample.DrawingFrame"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:util="clr-namespace:burningmime.util.wpf"
+    xmlns:ui="clr-namespace:burningmime.curves.sample">
+  
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="4" />
+      <ColumnDefinition Width="256" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Actual Drawing surface -->
+    <ui:DrawingSurface HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="_surface" x:FieldModifier="private" />
+
+    <!-- Options panel -->
+    <StackPanel Orientation="Vertical" Grid.Column="2" Background="White">
+
+      <!-- Preprocess mode -->
+      <TextBlock FontWeight="Bold" Text="Preprocess Mode" Margin="5,5,0,0"/>
+      <RadioButton Margin="10,5,5,0" GroupName="PreprocessModeGroup" Content="None" IsChecked="{util:RadioButtonEnumBinding PreprocessMode, NONE}" />
+      <RadioButton Margin="10,5,5,0" GroupName="PreprocessModeGroup" Content="Linearize" IsChecked="{util:RadioButtonEnumBinding PreprocessMode, LINEAR}" />
+      <RadioButton Margin="10,5,5,0" GroupName="PreprocessModeGroup" Content="Ramer–Douglas–Peucker" IsChecked="{util:RadioButtonEnumBinding PreprocessMode, RDP}" />
+
+      <!-- Render mode  -->
+      <TextBlock FontWeight="Bold" Text="Render Mode" Margin="5,10,0,0" />
+      <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Original points" IsChecked="{util:RadioButtonEnumBinding RenderMode, POINTS}" />
+      <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Preprocessed" IsChecked="{util:RadioButtonEnumBinding RenderMode, PREPROCESS}" />
+      <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Control points" IsChecked="{util:RadioButtonEnumBinding RenderMode, CONTROL_POINTS}" />
+      <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Reparamaterized" IsChecked="{util:RadioButtonEnumBinding RenderMode, SPLINE_DRAW}" />
+      <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Final curves" IsChecked="{util:RadioButtonEnumBinding RenderMode, WPF_DRAW}" />
+
+      <!-- Parameters -->
+      <TextBlock FontWeight="Bold" x:Name="_pointDistText" x:FieldModifier="private" Margin="5,10,5,0" />
+      <Slider Value="{Binding PointDistance, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+      <TextBlock FontWeight="Bold" x:Name="_rdpErrorText" x:FieldModifier="private" Margin="5,10,5,0" />
+      <Slider Value="{Binding RdpError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+      <TextBlock FontWeight="Bold" x:Name="_fitErrorText" x:FieldModifier="private" Margin="5,10,5,0" />
+      <Slider Value="{Binding FittingError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+
+      <!-- Performance text  -->
+      <TextBlock Foreground="Red" x:Name="_accelText" x:FieldModifier="private" Margin="5,10,0,0" />
+      <TextBlock Foreground="Red" x:Name="_fitTimeText" x:FieldModifier="private" Margin="5,5,0,0" />
+      <TextBlock Foreground="Red" x:Name="_pointCountText" x:FieldModifier="private" Margin="5,5,0,0" />
+
+    </StackPanel>
+  </Grid>
+</UserControl>

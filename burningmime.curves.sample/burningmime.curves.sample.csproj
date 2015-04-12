@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{437432C5-584B-40E2-8B62-C64F92C1B148}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>burningmime.curves.sample</RootNamespace>
+    <AssemblyName>burningmime.curves.sample</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkProfile />
+    <BaseOutputPath>..\bin\$(Configuration)\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
+    <BaseIntermediateOutputPath>..\obj\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;DEBUG;SYSTEM_NUMERICS_VECTOR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SYSTEM_NUMERICS_VECTOR</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>..\packages\System.Numerics.Vectors.4.0.0\lib\portable-net45+win8+wpa81\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\DrawingFrame.xaml.cs">
+      <DependentUpon>DrawingFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\DrawingSurface.cs" />
+    <Compile Include="src\IsHardwareAcceleratedHelper.cs" />
+    <Compile Include="src\TestData.cs" />
+    <Compile Include="src\util\Disposable.cs" />
+    <Compile Include="src\util\FourCC.cs" />
+    <Compile Include="src\util\ImplicitList.cs" />
+    <Compile Include="src\util\JenkinsHash.cs" />
+    <Compile Include="src\util\JetBrains.Annotations.cs" />
+    <Compile Include="src\util\Log.cs" />
+    <Compile Include="src\util\MinHeap.cs" />
+    <Compile Include="src\util\ProgressMonitor.cs" />
+    <Compile Include="src\util\ReflectionUtils.cs" />
+    <Compile Include="src\util\Utils.cs" />
+    <Compile Include="src\util\wpf\AsyncDispatcherEvent.cs" />
+    <Compile Include="src\util\wpf\AsyncObservableCollection.cs" />
+    <Compile Include="src\util\wpf\AsyncProgressViewer.cs" />
+    <Compile Include="src\util\wpf\Bindings.cs" />
+    <Compile Include="src\util\wpf\ColorArgb.cs" />
+    <Compile Include="src\util\wpf\DependencyPropertyChangedListener.cs" />
+    <Compile Include="src\util\wpf\IconExtension.cs" />
+    <Compile Include="src\util\wpf\ImageArgb.cs" />
+    <Compile Include="src\util\wpf\MeasuringCanvas.cs" />
+    <Compile Include="src\util\wpf\MultiKeyGesture.cs" />
+    <Compile Include="src\util\wpf\RadioButtonEnumConverter.cs" />
+    <Compile Include="src\util\wpf\UiUtils.cs" />
+    <Compile Include="src\util\wpf\UndoStack.cs" />
+    <Compile Include="src\util\wpf\ValueConverter.cs" />
+    <Compile Include="src\util\wpf\WpfMain.cs" />
+    <Compile Include="src\util\wpf\Wrappers.cs" />
+    <None Include="packages.config" />
+    <Page Include="src\DrawingFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="src\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="src\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="src\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="src\DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DependencyProperties.cs</LastGenOutput>
+    </None>
+    <Compile Include="src\DependencyProperties.cs">
+      <DependentUpon>DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="src\DependencyProperties.xsd">
+      <DependentUpon>DependencyProperties.tt</DependentUpon>
+    </None>
+    <None Include="src\DependencyProperties.xml">
+      <DependentUpon>DependencyProperties.tt</DependentUpon>
+    </None>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\burningmime.curves\burningmime.curves.csproj">
+      <Project>{7d86bd9e-3bcd-43f6-975d-8a15f3fb2cfc}</Project>
+      <Name>burningmime.curves</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

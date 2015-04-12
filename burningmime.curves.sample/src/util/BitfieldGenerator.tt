@@ -1,0 +1,123 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Runtime.CompilerServices" #>
+<#+
+public void writeBitfield(params Bitfield[] fields)
+{
+    // Reorder them if we want to use the minimal number of bins. Be warned this breaks foreward compatibility, so you probably shouldn't do this.
+    // Array.Sort(fields, (x, y) => x.sizeBits.CompareTo(y.sizeBits));
+
+    List<Bin> bins = new List<Bin>();
+    foreach(Bitfield f in fields)
+    {
+        bool found = false;
+        foreach(Bin b in bins)
+        {
+            if(b.fits(f))
+            {
+                b.add(f);
+                found = true;
+            }
+        }
+        if(!found)
+        {
+            Bin n = new Bin();
+            bins.Add(n);
+            n.add(f);
+        }
+    }
+
+    // Assign bins to fields
+    for(uint i = 0; i < bins.Count; i++)
+        foreach(Bitfield f in bins[(int) i].fields)
+            f.bin = i;
+
+    // Write bin fields
+    for(uint i = 0; i < bins.Count; i++) 
+        WriteLine("private int _value{0};", i, bins[(int) i].dval);
+
+    /*// Write "assign defaults" method
+    WriteLine("");
+    WriteLine("// ReSharper disable once UnusedMember.Local");
+    WriteLine("private void assignDefaults()");
+    WriteLine("{");
+    PushIndent("    ");
+    for(uint i = 0; i < bins.Count; i++) 
+        WriteLine("_value{0} = 0x{0:x8};", i, bins[(int) i].dval);
+    PopIndent();
+    WriteLine("}"); */
+
+    // Write wrapper properties
+    foreach(Bitfield f in fields)
+    {
+        WriteLine("");
+        string mask = string.Format("0x{0:x8}", ((1 << (int) f.sizeBits) - 1) << (int) f.start);
+        WriteLine("public {0} {1}", f.type, f.name);
+        WriteLine("{");
+        PushIndent("    ");
+        if(f.type == "bool")
+        {
+            WriteLine("get {{ return ({0} & {1}) != 0; }}", f.fieldName, mask);
+            WriteLine("set {{ if(value) {0} |= {1}; else {0} = ({0} & ~{1}); }}", f.fieldName, mask);
+        }
+        else
+        {
+            WriteLine("get {{ return ({0}) (({1} & {2}) >> {3}); }}", f.type, f.fieldName, mask, f.start);
+            WriteLine("set {{ {0} = ({0} & ~{1}) | ((int) value << {2}); }}", f.fieldName, mask, f.start);
+        }
+        PopIndent();
+        WriteLine("}");
+    }
+}
+
+public sealed class Bitfield
+{
+    public readonly string type;
+    public readonly string name;
+    public readonly uint sizeBits;
+    public readonly uint dval;
+    
+    public uint start;
+    public uint end { get { return start + sizeBits; } }
+    public string fieldName { get { return "_value" + bin; }}
+    public uint bin;
+    
+    public Bitfield(string type, string name, uint sizeBits, uint @default = 0)
+    {
+        if(sizeBits < 1 || sizeBits > 32) throw new Exception("Only fields with 1-32 bits supported");
+        if(type == "bool" && sizeBits != 1) throw new Exception("bools must be 1 bit");
+        if(@default != 0) throw new Exception("Right now, only zero is supported as a default");
+        this.type = type;
+        this.name = name;
+        this.sizeBits = sizeBits;
+        this.dval = @default;
+    }
+    
+    //private static uint nextPow2(uint v) { if(v <= 1) throw new Exception("v must be at least 2"); uint pow = 1; uint i = 0; while(pow < v) { i++; pow <<= 1; } return i; }
+    //private static string getType(uint s, bool u) { return s <= 8  ? (u ? "byte" : "sbyte") : s <= 16 ? (u ? "ushort" : "short") : (u ? "uint" : "int"); }
+    //public static Bitfield aBool(string name, bool dval = false) { return new Bitfield("bool", name, 1, dval ? (uint) 1 : (uint) 0); }
+    //public static Bitfield aInt(string type, string name, uint nvals, uint dval) { if(dval >= nvals) throw new Exception("dval >= nvals"); return new Bitfield(type, name, nextPow2(nvals), dval); }
+    //public static Bitfield aInt(string name, uint nvals, uint dval, bool unsigned = true) { if(dval >= nvals) throw new Exception("dval >= nvals"); uint s = nextPow2(nvals); return new Bitfield(getType(s, unsigned), name, s, dval); }
+}
+
+private sealed class Bin
+{
+    public uint size { get; private set; }
+    public uint dval { get; private set; }
+    private readonly List<Bitfield> _fields = new List<Bitfield>();
+    public IEnumerable<Bitfield> fields { get { return _fields; } }
+    public uint avail { get { return 32 - size; } }
+    public bool fits(Bitfield f) { return f.sizeBits <= avail; }
+    
+    public void add(Bitfield f)
+    {
+        if(!fits(f)) throw new Exception("doesn't fit!"); 
+        f.start = size;
+        size += f.sizeBits;
+        _fields.Add(f);
+        uint mask = (uint) ((1 << (int) f.sizeBits) - 1) << (int) f.start;
+        dval = (dval & ~mask) | (((uint) f.dval) << (int) f.start);
+    }
+}
+#>

@@ -1,0 +1,174 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Xml"#>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#  
+	string path = Path.Combine(Path.GetDirectoryName(Host.TemplateFile), "DependencyProperties.xml");
+	XDocument doc = XDocument.Load(path);
+	XElement root = doc.Nodes().FirstOrDefault() as XElement;
+#>
+using System;
+using System.Windows;
+using System.Windows.Media;
+using burningmime.util.wpf;
+
+<#
+foreach (XElement nsElem in root.Elements(named("Namespace")))
+{
+	string classNamespace = nsElem.Attribute("name").Value;
+	WriteLine("namespace " + classNamespace);
+	WriteLine("{");
+	foreach (XElement clazz in nsElem.Elements(named("Class")))
+	{
+		string className = clazz.Attribute("name").Value;
+		string access = attrOrDefault(clazz, "access", "public");
+		string modifiers = attrOrDefault(clazz, "modifiers", null);
+		string extends = attrOrDefault(clazz, "extends", null);
+		Write("    {0} {1}partial class {2}", access, modifiers != null ? modifiers + " " : "", className);
+		if(extends != null)
+		{
+			Write(" : ");
+			Write(extends);
+		}
+		WriteLine("");
+		WriteLine("    {");
+		foreach (XElement prop in clazz.Elements(named("Property")))
+			writeProperty(className, prop);
+		WriteLine("    }");
+		WriteLine("    ");
+		existingNotifies.Clear();
+	}
+	WriteLine("}");
+	WriteLine("");
+}
+#>
+ 
+<#+
+private readonly HashSet<string> existingNotifies = new HashSet<string>();
+private void writeProperty(string clazz, XElement elem)
+{
+    
+	string name = attr(elem, "name");
+	string type = attr(elem, "type");
+	string metadata = attrOrDefault(elem, "metadata", null);
+	string notify = attrOrDefault(elem, "notify", null);
+	string defaultValue = attrOrDefault(elem, "default", "default(" + type + ")");
+	bool attached = boolAttr(elem, "attached");
+	bool passargs = boolAttr(elem, "passargs");
+	bool ro =  boolAttr(elem, "readonly");
+	string getaccess = attrOrDefault(elem, "getaccess", "public");
+	string setaccess = attrOrDefault(elem, "setaccess", ro ? "private" : "public");
+	string lessrestrictive = getaccess == "public" || 
+		(getaccess == "protected" && setaccess != "public") ||
+		(getaccess == "internal" && setaccess == "private") ? getaccess : setaccess;
+    string annotations = attrOrDefault(elem, "annotations", null);
+    if(annotations != null && attached) throw new InvalidOperationException("Annotations are not supported on attached properties");
+	if(ro && attached) throw new InvalidOperationException("Attached readonly properties not supported");
+
+    // Write the getters/setters
+	if(attached)
+	{
+		string upper = firstUpper(name);
+        writeComments(elem);
+		WriteLine("        {3} static {0} Get{1}(DependencyObject obj) {{ return ({0}) obj.GetValue({2}Property); }}", type, upper, name, getaccess);
+        writeComments(elem);
+		WriteLine("        {4} static void Set{1}(DependencyObject obj, {0} value) {{ obj.SetValue({2}Property{3}, value); }}", type, upper, name, ro ? "Key" : "", setaccess);
+	}
+	else
+	{
+        writeComments(elem);
+		WriteLine("        {6}{3} {0} {1} {{ {4}get {{ return ({0}) GetValue({1}Property); }} {5}set {{ SetValue({1}Property{2}, value); }} }}", type, name, ro ? "Key" : "", lessrestrictive,
+			getaccess == lessrestrictive ? "" : getaccess + " ", setaccess == lessrestrictive ? "" : setaccess + " ", annotations == null ? "" : "[" + annotations + "] ");
+	}
+
+    // Write property itself
+	if(ro)
+	{
+		Write("        private static readonly DependencyPropertyKey {0}PropertyKey = DependencyProperty.RegisterReadOnly", name);
+		writeRegisterArgs(clazz, name, type, metadata, notify, attached, passargs, defaultValue);
+		WriteLine(";");
+		WriteLine("        public static readonly DependencyProperty<{1}> {0}Property = {0}PropertyKey.DependencyProperty.of<{1}>();", name, type);
+	}
+	else
+	{
+		Write("        {3} static readonly DependencyProperty<{1}> {0}Property = DependencyProperty.Register{2}", name, type, attached ? "Attached" : "", lessrestrictive);
+		writeRegisterArgs(clazz, name, type, metadata, notify, attached, passargs, defaultValue);
+		WriteLine(".of<{0}>();", type);
+	}
+	
+	// Write the notify method
+	if(notify != null && !existingNotifies.Contains(notify))
+	{
+		existingNotifies.Add(notify);
+		if(attached) WriteLine("        private static void {0}Internal(DependencyObject obj, DependencyPropertyChangedEventArgs args) {{ {0}(obj{2}); }}", notify, clazz, passargs ? ", args.of<" + type + ">()" : "");
+		else         WriteLine("        private static void {0}Internal(DependencyObject obj, DependencyPropertyChangedEventArgs args) {{ (({1}) obj).{0}({2}); }}", notify, clazz, passargs ? "args.of<" + type + ">()" : "");
+	}
+	WriteLine("        ");
+}
+
+private void writeComments(XElement elem)
+{
+    string comments = elem.Value;
+    if(!string.IsNullOrWhiteSpace(comments))
+    {
+        WriteLine("        /// <summary>");
+        foreach(string line in comments.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).Where(l => !string.IsNullOrWhiteSpace(l)))
+            WriteLine("        /// " + line.Trim());
+        WriteLine("        /// </summary>");
+    }
+}
+
+private void writeRegisterArgs(string clazz, string name, string type, string metadata, string notify, bool attached, bool passargs, string defaultValue)
+{
+
+	Write("(\"{0}\", typeof({1}), typeof({2}), new {4}PropertyMetadata({3}", name, type, clazz, defaultValue, metadata != null ? "Framework" : "");
+	if(metadata != null) Write(", {0}", metadata);
+	if(notify != null)   Write(", {0}Internal", notify);
+	Write("))", type);
+}
+
+XNamespace theNs = "burningmime.util.wpf.DependencyProperties";
+string quoted(string s) { return "\"" + s + "\""; }
+XName named(string name) { return theNs + name; }
+string firstLower(string s) { return s[0].ToString().ToLowerInvariant() + s.Substring(1); }
+string firstUpper(string s) { return s[0].ToString().ToUpperInvariant() + s.Substring(1); }
+string attr(XElement elem, string attribute) { return elem.Attribute(attribute).Value; }
+
+bool boolAttr(XElement elem, string attribute)
+{
+	bool result;
+	bool.TryParse(attrOrDefault(elem, attribute, "false"), out result);
+	return result;
+}
+
+string attrOrDefault(XElement elem, string attribute, string defaultValue)
+{
+	var attr = elem.Attribute(attribute);
+	return attr == null ? defaultValue : attr.Value;
+}
+
+/* private void writeAttachedCollection(string clazz, XElement elem)
+{
+	string name = attr(elem, "name");
+	string type = attr(elem, "type");
+	string added = attr(elem, "added");
+	WriteLine("        public static readonly DependencyPropertyKey {0}PropertyKey = DependencyProperty.RegisterAttachedReadOnly(\"{0}_\", " +
+		"typeof(ObservableCollection<{2}>), typeof({1}), new FrameworkPropertyMetadata(null));", name, clazz, type);
+	WriteLine("        public static readonly DependencyProperty {0}Property = {0}PropertyKey.DependencyProperty;", name);
+	WriteLine("        private static void Set{0}(DependencyObject obj, ObservableCollection<{1}> value) {{ obj.SetValue({0}PropertyKey, value); }}", name, type);
+	WriteLine("        public static ObservableCollection<{1}> Get{0}(DependencyObject obj)", name, type);
+	WriteLine("        {");
+	WriteLine("            var value = obj.GetValue({0}Property) as ObservableCollection<{1}>;", name, type);
+	WriteLine("            if(null != value) return value;");
+	WriteLine("            value = new ObservableCollection<{0}>();", type);
+	WriteLine("            value.CollectionChanged += (_, args) => {{ foreach({0} item in args.NewItems) {1}(obj, item); }};", type, added);
+	WriteLine("            Set{0}(obj, value);", name);
+	WriteLine("            return value;", name);
+	WriteLine("        }");
+} */
+#>

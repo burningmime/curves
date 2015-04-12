@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="zeal.ui.DependencyProperties"
+    targetNamespace="zeal.ui.DependencyProperties"
+    elementFormDefault="qualified"
+    xmlns="zeal.ui.DependencyProperties"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:simpleType name="AccessLevel">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="public"/>
+      <xs:enumeration value="protected"/>
+      <xs:enumeration value="internal"/>
+      <xs:enumeration value="private"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:element name="DependencyProperties">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Namespace">
+          <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Class">
+                <xs:complexType>
+                  <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="Property">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="name" use="required" type="xs:string" />
+                            <xs:attribute name="type" use="required" type="xs:string" />
+                            <xs:attribute name="default" use="optional" type="xs:string" />
+                            <xs:attribute name="metadata" use="optional" type="xs:string" />
+                            <xs:attribute name="notify" use="optional" type="xs:string" />
+                            <xs:attribute name="attached" use="optional" type="xs:boolean" />
+                            <xs:attribute name="passargs" use="optional" type="xs:boolean" />
+                            <xs:attribute name="readonly" use="optional" type="xs:boolean" />
+                            <xs:attribute name="getaccess" use="optional" type="AccessLevel" />
+                            <xs:attribute name="setaccess" use="optional" type="AccessLevel" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:choice>
+                  <xs:attribute name="name" use="required" type="xs:string" />
+                  <xs:attribute name="access" use="optional" type="AccessLevel" />
+                  <xs:attribute name="modifiers" use="optional" type="xs:string" />
+                  <xs:attribute name="extends" use="optional" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
