@@ -27,8 +27,8 @@ The colors denote 3 separate Bézier curves. These form a [Composite Bézier cur
 This "library" lets you do that in 2 lines of code:
 
 ```C#
-    List<Vector2> reduced = CurvePreprocess.RdpReduce(data, 2);   // use the Ramer-Douglas-Pueker algorithm to remove unnecessary points
-    CubicBézier [] curves = CurveFit.Fit(reduced, 8);             // fit the curves to those points
+List<Vector2> reduced = CurvePreprocess.RdpReduce(data, 2);   // use the Ramer-Douglas-Pueker algorithm to remove unnecessary points
+CubicBézier[] curves = CurveFit.Fit(reduced, 8);              // fit the curves to those points
 ```
 
 It also includes a WPF sample project so you can try this out for yourself and see what the parameters do, and how they affect the quality of the curves and the performance:
@@ -46,18 +46,20 @@ TODO: link to a compiled binary, and maybe a video of the app in action?
 This is not meant to be a library you compile into a DLL and link to. Because there are so many different Vector types flying around, it's easiest just to copy the source code
 from the `trunk\burningmime.curves\src` folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
 
-    #if SYSTEM_WINDOWS_VECTOR
-    using VECTOR = System.Windows.Vector;
-    using FLOAT = System.Double;
-    #elif SYSTEM_NUMERICS_VECTOR
-    using VECTOR = System.Numerics.Vector2;
-    using FLOAT = System.Single;
-    #elif UNITY
-    using VECTOR = UnityEngine.Vector2;
-    using FLOAT = System.Single;
-    #else
-    #error Unknown vector type -- must define one of SYSTEM_WINDOWS_VECTOR, SYSTEM_NUMERICS_VECTOR or UNITY
-    #endif
+```C#
+#if SYSTEM_WINDOWS_VECTOR
+using VECTOR = System.Windows.Vector;
+using FLOAT = System.Double;
+#elif SYSTEM_NUMERICS_VECTOR
+using VECTOR = System.Numerics.Vector2;
+using FLOAT = System.Single;
+#elif UNITY
+using VECTOR = UnityEngine.Vector2;
+using FLOAT = System.Single;
+#else
+#error Unknown vector type -- must define one of SYSTEM_WINDOWS_VECTOR, SYSTEM_NUMERICS_VECTOR or UNITY
+#endif
+```
 
 In your project properties, you can add one of the preprocessor symbols to the project depending on what you're targeting. Alternatively, you can simply do a `#define` at the top
 of each file. In Unity you should add UNITY to the global custom defines in the project settings -- see http://docs.unity3d.com/Manual/PlatformDependentCompilation.html .
