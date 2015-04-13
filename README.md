@@ -28,7 +28,7 @@ This "library" lets you do that in 2 lines of code:
 
 ```C#
 List<Vector2> reduced = CurvePreprocess.RdpReduce(data, 2);   // use the Ramer-Douglas-Pueker algorithm to remove unnecessary points
-CubicBézier[] curves = CurveFit.Fit(reduced, 8);              // fit the curves to those points
+CubicBezier[] curves = CurveFit.Fit(reduced, 8);              // fit the curves to those points
 ```
 
 It also includes a WPF sample project so you can try this out for yourself and see what the parameters do, and how they affect the quality of the curves and the performance:
