@@ -16,8 +16,8 @@ using FLOAT = System.Single;
 namespace burningmime.curves
 {
     /// <summary>
-    /// The point of this class is to abstract some of the functions of Vector2 so they can be used with either System.Windows.Vector,
-    /// System.Numerics.Vector2, UnityEngine.Vector2.
+    /// The point of this class is to abstract some of the functions of Vector2 so they can be used with System.Windows.Vector,
+    /// System.Numerics.Vector2, UnityEngine.Vector2, or another vector type.
     /// </summary>
     public static class VectorHelper
     {

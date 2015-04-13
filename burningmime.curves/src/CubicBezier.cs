@@ -105,7 +105,7 @@ namespace burningmime.curves
             return sb.ToString();
         }
 
-        // Equality members -- pretty straightforeward
+        // Equality members -- pretty straightforward
         public static bool operator ==(CubicBezier left, CubicBezier right) { return left.Equals(right); }
         public static bool operator !=(CubicBezier left, CubicBezier right) { return !left.Equals(right); }
         public bool Equals(CubicBezier other) { return p0.Equals(other.p0) && p1.Equals(other.p1) && p2.Equals(other.p2) && p3.Equals(other.p3); }
@@ -128,8 +128,6 @@ namespace burningmime.curves
         /// Simple implementation of Jenkin's hashing algorithm.
         /// http://en.wikipedia.org/wiki/Jenkins_hash_function
         /// I forget where I got these magic numbers from; supposedly they're good.
-        /// 
-        /// Copied from the utils because the curve code should be usable without them.
         /// </summary>
         private struct JenkinsHash
         {

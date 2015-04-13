@@ -33,7 +33,7 @@ namespace burningmime.curves.sample
             
             _accelText.Text = typeof(VECTOR).FullName;
 #if SYSTEM_NUMERICS_VECTOR
-            _accelText.Text += Environment.NewLine + "Vector.IsHardwareAccelerated = " + (IsHardwareAcceleratedHelper.isHardwareAccelerated ? "true" : "false");
+            _accelText.Text += Environment.NewLine + "Vector.IsHardwareAccelerated = " + (IsHardwareAcceleratedHelper.IsHardwareAccelerated ? "true" : "false");
 #endif
         }
     }

@@ -74,12 +74,12 @@ namespace burningmime.curves
         }
 
         /// <summary>
-        /// Removes any repeated points (that is, one point extemely close to the previous one). The same point can
+        /// Removes any repeated points (that is, one point extremely close to the previous one). The same point can
         /// appear multiple times just not right after one another. This does not modify the input list. If no repeats
         /// were found, it returns the input list; otherwise it creates a new list with the repeats removed.
         /// </summary>
         /// <param name="pts">Initial list of points.</param>
-        /// <returns>Either pts (if no duplciates were found), or a new list containing pts with duplicates removed.</returns>
+        /// <returns>Either pts (if no duplicates were found), or a new list containing pts with duplicates removed.</returns>
         public static List<VECTOR> RemoveDuplicates(List<VECTOR> pts)
         {
             if(pts.Count < 2)
@@ -191,7 +191,7 @@ namespace burningmime.curves
         private static FLOAT PerpendicularDistance(VECTOR a, VECTOR b, FLOAT abDist, FLOAT aCrossB, VECTOR p)
         {
             // a profile with the test data showed that originally this was eating up ~44% of the runtime. So, this went through
-            // several iterations of optimization and staring at the dissasembly. I tried different methods of using cross
+            // several iterations of optimization and staring at the disassembly. I tried different methods of using cross
             // products, doing the computation with larger vector types, etc... this is the best I could do in ~45 minutes
             // running on 3 hours of sleep, which is all scalar math, but RyuJIT puts it into XMM registers and does
             // ADDSS/SUBSS/MULSS/DIVSS because that's what it likes to do whenever it sees a vector in a function.

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 #if SYSTEM_WINDOWS_VECTOR
 using VECTOR = System.Windows.Vector;
 using FLOAT = System.Double;
@@ -18,7 +19,7 @@ namespace burningmime.curves
 {
     /// <summary>
     /// Implements a least-squares bezier curve fitting routine based on http://tog.acm.org/resources/GraphicsGems/gems/FitCurves.c with a few 
-    /// optimzations made by me. You can read the article here: http://read.pudn.com/downloads141/ebook/610086/Graphics_Gems_I.pdf page 626.
+    /// optimizations made by me. You can read the article here: http://read.pudn.com/downloads141/ebook/610086/Graphics_Gems_I.pdf page 626.
     /// To use, call the <see cref="Fit"/> static function and wait for magic to happen.
     /// </summary>
     public sealed class CurveFit : CurveFitBase

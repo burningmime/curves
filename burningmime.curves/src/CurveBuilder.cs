@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+
 #if SYSTEM_WINDOWS_VECTOR
 using VECTOR = System.Windows.Vector;
 using FLOAT = System.Double;
@@ -188,11 +189,11 @@ namespace burningmime.curves
 
         /// <summary>
         /// Changes made to the CurveBuilder.curves list after a call to <see cref="CurveBuilder.AddPoint"/>.
-        /// This seems like a prime candidate for an F#-style discriminated union/algebreic data type.
+        /// This seems like a prime candidate for an F#-style discriminated union/algebraic data type.
         /// </summary>
         public struct AddPointResult
         {
-            private readonly int _data; // packed value... need this so that default(AddPointResult) is no change
+            private readonly int _data; // packed value... need this so that default(AddPointResult) which is always 0 to represent no change
 
             /// <summary>
             /// No changes were made.

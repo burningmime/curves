@@ -36,7 +36,7 @@ namespace burningmime.curves
         private readonly int _samplesPerCurve;
         
         /// <summary>
-        /// Creates an emoty spline.
+        /// Creates an empty spline.
         /// </summary>
         /// <param name="samplesPerCurve">Resolution of the curve. Values 32-256 work well. You may need more or less depending on how big the curves are.</param>
         public Spline(int samplesPerCurve)

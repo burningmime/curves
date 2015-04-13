@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 #if SYSTEM_WINDOWS_VECTOR
 using VECTOR = System.Windows.Vector;
 using FLOAT = System.Double;
@@ -39,8 +40,8 @@ namespace burningmime.curves
         protected readonly List<FLOAT> _arclen = new List<FLOAT>(256);
 
         /// <summary>
-        /// current parametrization of the curve. When fitting, u[i] is the pameterization for the point in pts[first + i]. This is
-        /// an optimization for CurveBuilder, since it might not need to allocate as big of a _u as is nesescary to hold the whole
+        /// current parametrization of the curve. When fitting, u[i] is the parametrization for the point in pts[first + i]. This is
+        /// an optimization for CurveBuilder, since it might not need to allocate as big of a _u as is necessary to hold the whole
         /// curve.
         /// </summary>
         protected readonly List<FLOAT> _u = new List<FLOAT>(256);
@@ -92,7 +93,7 @@ namespace burningmime.curves
                     if(i != 0) Reparameterize(first, last, curve);                                  // use newton's method to find better parameters (except on first run, since we don't have a curve yet)
                     curve = GenerateBezier(first, last, tanL, tanR);                                // generate the curve itself
                     FLOAT error = FindMaxSquaredError(first, last, curve, out split);               // calculate error and get split point (point of max error)
-                    if(error < _squaredError)  return true;                                         // if we're within error tolerence, awesome!
+                    if(error < _squaredError)  return true;                                         // if we're within error tolerance, awesome!
                 }
                 return false;
             }
@@ -198,7 +199,7 @@ namespace burningmime.curves
                 VectorHelper.Normalize(total / weightTotal) :
                 VectorHelper.Normalize(pSplit - pts[split + 1]);
 
-            // The reason we seperate this into two halves is because we want the right and left tangents to be weighted
+            // The reason we separate this into two halves is because we want the right and left tangents to be weighted
             // equally no matter the weights of the individual parts of them, so that one of the curves doesn't get screwed
             // for the pleasure of the other half
             total = tanL + tanR;
@@ -259,15 +260,15 @@ namespace burningmime.curves
         }
 
         /// <summary>
-        /// generates a bezier curve for the segment using a least-squares approximation. for the derivation of this and why it works,
-        /// see http://read.pudn.com/downloads141/ebook/610086/Graphics_Gems_I.pdf page 626 and beyond.
+        /// Generates a bezier curve for the segment using a least-squares approximation. for the derivation of this and why it works,
+        /// see http://read.pudn.com/downloads141/ebook/610086/Graphics_Gems_I.pdf page 626 and beyond. tl;dr: math.
         /// </summary>
         protected CubicBezier GenerateBezier(int first, int last, VECTOR tanL, VECTOR tanR)
         {
             List<VECTOR> pts = _pts;
             List<FLOAT> u = _u;
             int nPts = last - first + 1;
-            VECTOR p0 = pts[first], p3 = pts[last]; // first and last points of curve areactual points on data
+            VECTOR p0 = pts[first], p3 = pts[last]; // first and last points of curve are actual points on data
             FLOAT c00 = 0, c01 = 0, c11 = 0, x0 = 0, x1 = 0; // matrix members -- both C[0,1] and C[1,0] are the same, stored in c01
             for(int i = 1; i < nPts; i++)
             {
@@ -358,7 +359,7 @@ namespace burningmime.curves
         }
 
         /// <summary>
-        /// Computes the maximum squared distance from a point to the curve using the current paramaterization.
+        /// Computes the maximum squared distance from a point to the curve using the current parameterization.
         /// </summary>
         protected FLOAT FindMaxSquaredError(int first, int last, CubicBezier curve, out int split)
         {

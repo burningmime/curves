@@ -18,7 +18,7 @@ namespace burningmime.curves
 {
     /// <summary>
     /// Wraps a <see cref="CurveBuilder"/> and <see cref="Spline"/> together. Allows you to add data points as they come in and
-    /// generate a smooth spline from them without doing unesescary computation.
+    /// generate a smooth spline from them without doing unnecessary computation.
     /// </summary>
     public sealed class SplineBuilder
     {
