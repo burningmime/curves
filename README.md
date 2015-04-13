@@ -21,14 +21,14 @@ and the most popular method is the [Ramer-Douglas-Pueker algorithm](http://en.wi
 
 A lot nicer! For some programs, this is enough to work with. For others, we need to fit some curves to the data, which is when we call up our friend Philip J. Schneider:
 
-![readme-example-curves.png](/images/readme-example-curves.png?raw=true)
+![readme-example-fit.png](/images/readme-example-fit.png?raw=true)
 
 The colors denote 3 separate Bézier curves. These form a [Composite Bézier curve](http://en.wikipedia.org/wiki/Composite_B%C3%A9zier_curve) that approximates the input data.
 This "library" lets you do that in 2 lines of code:
 
 ```C#
     List<Vector2> reduced = CurvePreprocess.RdpReduce(data, 2);   // use the Ramer-Douglas-Pueker algorithm to remove unnecessary points
-    CubicBézier [] curves = CurveFit.Fit(reduced, 8);              // fit the curves to those points
+    CubicBézier [] curves = CurveFit.Fit(reduced, 8);             // fit the curves to those points
 ```
 
 It also includes a WPF sample project so you can try this out for yourself and see what the parameters do, and how they affect the quality of the curves and the performance:
