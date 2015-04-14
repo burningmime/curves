@@ -12,9 +12,18 @@ OK, graph first (courtesy of [ChartGo](http://www.chartgo.com/)):
 * New JIT was [RyuJIT CTP5 version launched Oct 2014](http://blogs.msdn.com/b/clrcodegeneration/archive/2014/10/31/ryujit-ctp5-getting-closer-to-shipping-and-with-better-simd-support.aspx))
 * Numbers are an average of 3 test sessions (they were quite stable)
 * Each session consisted of 3000 iterations per pair of (RDP error, fit error) parameters, for a total of 45000 iterations (see the raw data below for the breadown)
-* The test data used was the same 966-point data set as when you launch the sample program (kind of looks like a dude with glasses)
 * [Source code for test program](/burningmime.curves.perftest/src/Program.cs)
 * [Batch file I used to run it with different configs](/runtests.bat)
+
+** Test data: **
+
+Same as the sample app. Fitting Bezier curves to these 966 points:
+
+![ryujit-perf-testdata-original.png](/images/ryujit-perf-testdata-original.png?raw=true)
+
+With RDP error = 2 and Fit Error = 8, the results look like:
+
+![ryujit-perf-testdata-fit.png](/images/ryujit-perf-testdata-fit.png?raw=true)
 
 **Results:**
 
