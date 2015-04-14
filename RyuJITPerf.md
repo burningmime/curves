@@ -15,9 +15,9 @@ OK, graph first (courtesy of [ChartGo](http://www.chartgo.com/)):
 * [Source code for test program](/burningmime.curves.perftest/src/Program.cs)
 * [Batch file I used to run it with different configs](/runtests.bat)
 
-** Test data: **
+**Test data:**
 
-Same as the sample app. Fitting Bezier curves to these 966 points:
+Same as the sample app shows on startup. Fitting Bezier curves to these 966 points:
 
 ![ryujit-perf-testdata-original.png](/images/ryujit-perf-testdata-original.png?raw=true)
 
