@@ -25,15 +25,15 @@ namespace burningmime.curves.sample
             InitializeComponent();
             DataContext = _surface;
             
-            Bindings.set(_pointDistText,  TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.PointDistanceProperty, value => "Linearize point distance: " + value);
-            Bindings.set(_rdpErrorText,   TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.RdpErrorProperty,      value => "Ramer–Douglas–Peucker error: " + value);
-            Bindings.set(_fitErrorText,   TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.FittingErrorProperty,  value => "Curve fitting error: " + value);
+            Bindings.set(_pointDistText,  TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.PointDistanceProperty, value => "Linearize point distance: " + value.ToString("#.##"));
+            Bindings.set(_rdpErrorText,   TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.RdpErrorProperty,      value => "Ramer–Douglas–Peucker error: " + value.ToString("#.##"));
+            Bindings.set(_fitErrorText,   TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.FittingErrorProperty,  value => "Curve fitting error: " + value.ToString("#.##"));
             Bindings.set(_fitTimeText,    TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.LastFitTimeProperty,   value => value.isNaN() ? string.Empty : string.Format("Time: {0:0.0000}ms", value));
             Bindings.set(_pointCountText, TextBlock.TextProperty.of<string>(), _surface, DrawingSurface.PointCountProperty,    value => string.IsNullOrEmpty(value) ? string.Empty : "Points before/after pre-processing: " + value);
             
             _accelText.Text = typeof(VECTOR).FullName;
 #if SYSTEM_NUMERICS_VECTOR
-            _accelText.Text += Environment.NewLine + "Vector.IsHardwareAccelerated = " + (IsHardwareAcceleratedHelper.IsHardwareAccelerated ? "true" : "false");
+            _accelText.Text += Environment.NewLine + "Vector.IsHardwareAccelerated = " + (RyuJitStatus.SimdEnabled ? "true" : "false");
 #endif
         }
     }

@@ -39,12 +39,12 @@
   </ItemGroup>
   <ItemGroup Condition="$(DefineConstants.Contains('UNITY'))">
     <Reference Include="UnityEngine">
-      <HintPath>..\UnityEngine.dll</HintPath>
+      <HintPath>..\packages\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\burningmime.curves.sample\src\IsHardwareAcceleratedHelper.cs">
-      <Link>src\IsHardwareAcceleratedHelper.cs</Link>
+    <Compile Include="..\burningmime.curves.sample\src\RyuJitStatus.cs">
+      <Link>src\RyuJitStatus.cs</Link>
     </Compile>
     <Compile Include="..\burningmime.curves.sample\src\TestData.cs">
       <Link>src\TestData.cs</Link>

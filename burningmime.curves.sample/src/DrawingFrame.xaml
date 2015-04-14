@@ -31,14 +31,15 @@
       <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Control points" IsChecked="{util:RadioButtonEnumBinding RenderMode, CONTROL_POINTS}" />
       <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Reparamaterized" IsChecked="{util:RadioButtonEnumBinding RenderMode, SPLINE_DRAW}" />
       <RadioButton Margin="10,5,5,0" GroupName="RenderModeGroup" Content="Final curves" IsChecked="{util:RadioButtonEnumBinding RenderMode, WPF_DRAW}" />
+      <CheckBox Margin="10,10,5,0" Content="Colorize curves" IsChecked="{Binding ShowCurveColors, Mode=TwoWay}" />
 
       <!-- Parameters -->
       <TextBlock FontWeight="Bold" x:Name="_pointDistText" x:FieldModifier="private" Margin="5,10,5,0" />
-      <Slider Value="{Binding PointDistance, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+      <Slider Value="{Binding PointDistance, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.POINT_DIST_MIN}" Maximum="{x:Static ui:DrawingSurface.POINT_DIST_MAX}" TickFrequency=".5" IsSnapToTickEnabled="True" />
       <TextBlock FontWeight="Bold" x:Name="_rdpErrorText" x:FieldModifier="private" Margin="5,10,5,0" />
-      <Slider Value="{Binding RdpError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+      <Slider Value="{Binding RdpError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.RDP_ERROR_MIN}" Maximum="{x:Static ui:DrawingSurface.RDP_ERROR_MAX}" TickFrequency=".25" IsSnapToTickEnabled="True" />
       <TextBlock FontWeight="Bold" x:Name="_fitErrorText" x:FieldModifier="private" Margin="5,10,5,0" />
-      <Slider Value="{Binding FittingError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.SLIDER_MIN}" Maximum="{x:Static ui:DrawingSurface.SLIDER_MAX}" />
+      <Slider Value="{Binding FittingError, Mode=TwoWay}" Minimum="{x:Static ui:DrawingSurface.FIT_ERROR_MIN}" Maximum="{x:Static ui:DrawingSurface.FIT_ERROR_MAX}" TickFrequency=".5" IsSnapToTickEnabled="True" />
 
       <!-- Performance text  -->
       <TextBlock Foreground="Red" x:Name="_accelText" x:FieldModifier="private" Margin="5,10,0,0" />

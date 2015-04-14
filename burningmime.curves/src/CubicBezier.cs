@@ -86,21 +86,21 @@ namespace burningmime.curves
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("CubicBezier: (<");
-            sb.Append(VectorHelper.GetX(p0).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetX(p0).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append(", ");
-            sb.Append(VectorHelper.GetY(p0).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetY(p0).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append("> <");
-            sb.Append(VectorHelper.GetX(p1).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetX(p1).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append(", ");
-            sb.Append(VectorHelper.GetY(p1).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetY(p1).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append("> <");
-            sb.Append(VectorHelper.GetX(p2).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetX(p2).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append(", ");
-            sb.Append(VectorHelper.GetY(p2).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetY(p2).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append("> <");
-            sb.Append(VectorHelper.GetX(p3).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetX(p3).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append(", ");
-            sb.Append(VectorHelper.GetY(p3).ToString("N3", CultureInfo.InvariantCulture));
+            sb.Append(VectorHelper.GetY(p3).ToString("#.###", CultureInfo.InvariantCulture));
             sb.Append(">)");
             return sb.ToString();
         }

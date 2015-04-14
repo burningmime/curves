@@ -100,21 +100,21 @@ namespace burningmime.curves.sample
         /// <summary>
         /// Distance between points for Linearization preprocessing.
         /// </summary>
-        public int PointDistance { get { return (int) GetValue(PointDistanceProperty); } set { SetValue(PointDistanceProperty, value); } }
-        public static readonly DependencyProperty<int> PointDistanceProperty = DependencyProperty.Register("PointDistance", typeof(int), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_POINT_DIST, onPointDistanceChangedInternal)).of<int>();
+        public double PointDistance { get { return (double) GetValue(PointDistanceProperty); } set { SetValue(PointDistanceProperty, value); } }
+        public static readonly DependencyProperty<double> PointDistanceProperty = DependencyProperty.Register("PointDistance", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_POINT_DIST, onPointDistanceChangedInternal)).of<double>();
         private static void onPointDistanceChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onPointDistanceChanged(); }
         
         /// <summary>
         /// Maximum error for RDP reduction algorithm.
         /// </summary>
-        public int RdpError { get { return (int) GetValue(RdpErrorProperty); } set { SetValue(RdpErrorProperty, value); } }
-        public static readonly DependencyProperty<int> RdpErrorProperty = DependencyProperty.Register("RdpError", typeof(int), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_RDP_ERROR, onPointDistanceChangedInternal)).of<int>();
+        public double RdpError { get { return (double) GetValue(RdpErrorProperty); } set { SetValue(RdpErrorProperty, value); } }
+        public static readonly DependencyProperty<double> RdpErrorProperty = DependencyProperty.Register("RdpError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_RDP_ERROR, onPointDistanceChangedInternal)).of<double>();
         
         /// <summary>
         /// Maximum error for fitting algorithm.
         /// </summary>
-        public int FittingError { get { return (int) GetValue(FittingErrorProperty); } set { SetValue(FittingErrorProperty, value); } }
-        public static readonly DependencyProperty<int> FittingErrorProperty = DependencyProperty.Register("FittingError", typeof(int), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_FIT_ERROR, onErrorChangedInternal)).of<int>();
+        public double FittingError { get { return (double) GetValue(FittingErrorProperty); } set { SetValue(FittingErrorProperty, value); } }
+        public static readonly DependencyProperty<double> FittingErrorProperty = DependencyProperty.Register("FittingError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_FIT_ERROR, onErrorChangedInternal)).of<double>();
         private static void onErrorChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onErrorChanged(); }
         
         /// <summary>
@@ -128,6 +128,13 @@ namespace burningmime.curves.sample
         /// </summary>
         public string PointCount { get { return (string) GetValue(PointCountProperty); } set { SetValue(PointCountProperty, value); } }
         public static readonly DependencyProperty<string> PointCountProperty = DependencyProperty.Register("PointCount", typeof(string), typeof(DrawingSurface), new PropertyMetadata(string.Empty)).of<string>();
+        
+        /// <summary>
+        /// Should curves have different colors when displayed?
+        /// </summary>
+        public bool ShowCurveColors { get { return (bool) GetValue(ShowCurveColorsProperty); } set { SetValue(ShowCurveColorsProperty, value); } }
+        public static readonly DependencyProperty<bool> ShowCurveColorsProperty = DependencyProperty.Register("ShowCurveColors", typeof(bool), typeof(DrawingSurface), new PropertyMetadata(true, onColorizeChangedInternal)).of<bool>();
+        private static void onColorizeChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onColorizeChanged(); }
         
     }
     

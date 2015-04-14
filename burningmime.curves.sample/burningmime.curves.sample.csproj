@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup Condition="$(DefineConstants.Contains('UNITY'))">
     <Reference Include="UnityEngine">
-      <HintPath>..\UnityEngine.dll</HintPath>
+      <HintPath>..\packages\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +63,7 @@
       <DependentUpon>DrawingFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\DrawingSurface.cs" />
-    <Compile Include="src\IsHardwareAcceleratedHelper.cs" />
+    <Compile Include="src\RyuJitStatus.cs" />
     <Compile Include="src\TestData.cs" />
     <Compile Include="src\util\Disposable.cs" />
     <Compile Include="src\util\FourCC.cs" />

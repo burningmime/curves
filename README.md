@@ -1,21 +1,23 @@
 # curves
 
-## Summary
+### Summary
 
 This is a C# implementation of Philip J. Schneider's least-squares method for fitting Bézier  curves to a set of input data points, as well as several helper routines/classes to work with Bézier  curves.
 It's designed to work with several different Vector types: WPF, the [SIMD-enabled vector types](http://www.nuget.org/packages/System.Numerics.Vectors) and [Unity 3D](http://unity3d.com/), and is
 very simple to extend for use in other contexts. It's also high-performance and was profiled/micro-optimized to be quite fast without sacrificing API simplicity.
 
-## Example
+### Example
 
-Say you have a bunch of input points like this (say, from a touchscreen or drawn by a mouse):
+Say you have a bunch of input points like this (ie from a touchscreen or drawn by a mouse):
 
 ![readme-example-original.png](/images/readme-example-original.png?raw=true)
 
-These are fairly smooth, but there's a bit of jitter, so you might want to smooth them out if you're drawing them. More importantly, these are very hard to work
-with for computations. You need to represent this data in a format that's easy for a computer to work with. The answer is [Bézier  curves](http://en.wikipedia.org/wiki/B%C3%A9zier_curve),
-but how do we get a curve that approximates the data? The first step (optional, but highly recommended) is to remove some of the excess points. The library supports two methods of doing this,
-and the most popular method is the [Ramer-Douglas-Pueker algorithm](http://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm). After doing this, the input data is reduced to this:
+This seems to form a an "S" shape. However, there's a bit of jitter visible (maybe the person drawing it had too much coffee -- most hand-drawn lines/shapes look a lot
+worse than this). Maybe you want to smooth it out to display a nice line on the user's phone? More importantly, these points aren't evenly spaced and are generally quite difficult
+to work with programmatically. We need to transform this data into a format a computer can easily work with. The answer is [Bézier  curves](http://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+
+How do we get a curve that approximates the data? The first step (optional, but highly recommended) is to remove some of the excess points. The most common method of doing this 
+is the [Ramer-Douglas-Pueker algorithm](http://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm). After running it, the input data looks like:
 
 ![readme-example-rdp.png](/images/readme-example-rdp.png?raw=true)
 
@@ -23,8 +25,8 @@ A lot nicer! For some programs, this is enough to work with. For others, we need
 
 ![readme-example-fit.png](/images/readme-example-fit.png?raw=true)
 
-The colors denote 3 separate Bézier curves. These form a [Composite Bézier curve](http://en.wikipedia.org/wiki/Composite_B%C3%A9zier_curve) that approximates the input data.
-This "library" lets you do that in 2 lines of code:
+The colors denote 3 separate Bézier curves. These form a [Composite Bézier curve](http://en.wikipedia.org/wiki/Composite_B%C3%A9zier_curve) with C1 continuity that approximates the input data.
+This library lets you do that in 2 lines of code:
 
 ```C#
 List<Vector2> reduced = CurvePreprocess.RdpReduce(data, 2);   // use the Ramer-Douglas-Pueker algorithm to remove unnecessary points
@@ -37,13 +39,13 @@ It also includes a WPF sample project so you can try this out for yourself and s
 
 Neat, huh?
 
-## See for yourself
+### See for yourself
 
 TODO: link to a compiled binary, and maybe a video of the app in action?
 
-## Using the code
+### Getting the code to work with your project
 
-This is not meant to be a library you compile into a DLL and link to. Because there are so many different Vector types flying around, it's easiest just to copy the source code
+This is not meant to be a library you compile into a DLL and link to typically. Because there are so many different Vector types flying around, it's easiest just to copy the source code
 from the `trunk\burningmime.curves\src` folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
 
 ```C#
@@ -64,9 +66,13 @@ using FLOAT = System.Single;
 In your project properties, you can add one of the preprocessor symbols to the project depending on what you're targeting. Alternatively, you can simply do a `#define` at the top
 of each file. In Unity you should add UNITY to the global custom defines in the project settings -- see http://docs.unity3d.com/Manual/PlatformDependentCompilation.html .
 
-You can very easily add support for another vector type (assuming it has overloaded operators) by modifying `VectorHelper.cs`. For example, `SharpDX.Vector2` and
+If you're using VB.Net, F#, or another .NET language, you'll need to compile it with the correct Vector type and reference the compiled DLL.
+
+You can very easily add support for new vector types (assuming it has overloaded operators) by modifying `VectorHelper.cs`. For example, `SharpDX.Vector2` and
 `Microsoft.Xna.Framework.Vector2` are trivial to add since they use the same interface as `System.Numerics.Vector2`. I haven't looked into WinRT much 
 but it might have a vector type similar to `System.Windows.Vector` (WPF).
+
+### Using the code
 
 See the code documentation for usage info on the specific functions. The most important ones are the ones demonstrated above -- `CurvePreprocess.RdpReduce` to simplify input
 data and `CurveFit.Fit` to fit curves to the data. You don't need to pre-process the input data, but it will fail if the input data contains repeated data points, so you should
@@ -77,18 +83,11 @@ work.
 
 TODO: document the spline, builder, etc here.
 
-## Enabling SIMD
+### Enabling SIMD
 
 I'll just leave this here: http://www.drdobbs.com/windows/64-bit-simd-code-from-c/240168851
 
-## Performance
-
-Quite good indeed! I made a few sacrifices for API simplicity (most notably using lists instead of arrays for some things, which gave about a 2% slowdown in my tests), but generally
-the performance is extremely good. It was tuned/profiled for the SIMD-enabled vector types and RyuJIT, so it might suffer a bit in other configurations, but hopefully not much.
-
-TODO: some graphs, data, etc.
-
-## Acknowledgments
+### Acknowledgments
 
 This started out as a straight port from here: http://tog.acm.org/resources/GraphicsGems/gems/FitCurves.c
 

@@ -33,11 +33,15 @@ namespace burningmime.curves.sample
         private static readonly Log _log = LogManager.getLog(typeof(DrawingSurface));
 
         // parameter min/max/defaults
-        public  const double SLIDER_MIN               = 1; 
-        public  const double SLIDER_MAX               = 25;
-        public  const int    DEFAULT_FIT_ERROR        = 8;
-        public  const int    DEFAULT_POINT_DIST       = 8;
-        public  const int    DEFAULT_RDP_ERROR        = 2;
+        public const double RDP_ERROR_MIN             = 1; 
+        public const double RDP_ERROR_MAX             = 8;
+        public const double DEFAULT_RDP_ERROR         = 2;
+        public const double POINT_DIST_MIN            = 1; 
+        public const double POINT_DIST_MAX            = 16;
+        public const double DEFAULT_POINT_DIST        = 8;
+        public const double FIT_ERROR_MIN             = 1; 
+        public const double FIT_ERROR_MAX             = 25;
+        public const double DEFAULT_FIT_ERROR         = 8;
 
         // other constants
         private const int    SAMPLES_PER_CURVE        = 64;   // samples used in the spline
@@ -131,6 +135,7 @@ namespace burningmime.curves.sample
         private void onErrorChanged() { if(RenderMode >= RenderModes.CONTROL_POINTS) doRender(); }
         private void onPointDistanceChanged() { if(RenderMode >= RenderModes.PREPROCESS) doRender(); }
         private void onPreprocessModeChanged() { if(RenderMode >= RenderModes.PREPROCESS) doRender(); }
+        private void onColorizeChanged() { if(RenderMode >= RenderModes.CONTROL_POINTS) doRender(); }
 
         private void addPoint(Point p)
         {
@@ -168,10 +173,10 @@ namespace burningmime.curves.sample
                     clearAndDrawControlPoints(fitCurves());
                     break;
                 case RenderModes.SPLINE_DRAW:
-                    clearAndDrawSpline(fitCurves());
+                    clearAndDrawSpline(fitCurves(), ShowCurveColors);
                     break;
                 case RenderModes.WPF_DRAW:
-                    clearAndDrawCurves(fitCurves(), true);
+                    clearAndDrawCurves(fitCurves(), ShowCurveColors);
                     break;
                 default:
                     _log.error("Invalid PointRenderMode");
@@ -199,8 +204,8 @@ namespace burningmime.curves.sample
         private List<VECTOR> preprocessOnly()
         {
             // Access the dependency properties outside the stopwatch area
-            FLOAT linDist = ((FLOAT) PointDistance).clamp((FLOAT) SLIDER_MIN, (FLOAT) SLIDER_MAX);
-            FLOAT rdpError = ((FLOAT) RdpError).clamp((FLOAT) SLIDER_MIN, (FLOAT) SLIDER_MAX);
+            FLOAT linDist = ((FLOAT) PointDistance).clamp((FLOAT) POINT_DIST_MIN, (FLOAT) POINT_DIST_MAX);
+            FLOAT rdpError = ((FLOAT) RdpError).clamp((FLOAT) RDP_ERROR_MIN, (FLOAT) RDP_ERROR_MAX);
             PreprocessModes ppMode = PreprocessMode;
             List<VECTOR> inPts = _points;
 
@@ -216,9 +221,9 @@ namespace burningmime.curves.sample
         private CubicBezier[] fitCurves()
         {
             // Access the dependency properties outside the stopwatch area
-            FLOAT fitError = ((FLOAT) FittingError).clamp((FLOAT) SLIDER_MIN, (FLOAT) SLIDER_MAX);
-            FLOAT linDist = ((FLOAT) PointDistance).clamp((FLOAT) SLIDER_MIN, (FLOAT) SLIDER_MAX);
-            FLOAT rdpError = ((FLOAT) RdpError).clamp((FLOAT) SLIDER_MIN, (FLOAT) SLIDER_MAX);
+            FLOAT fitError = ((FLOAT) FittingError).clamp((FLOAT) FIT_ERROR_MIN, (FLOAT) FIT_ERROR_MAX);
+            FLOAT linDist = ((FLOAT) PointDistance).clamp((FLOAT) POINT_DIST_MIN, (FLOAT) POINT_DIST_MAX);
+            FLOAT rdpError = ((FLOAT) RdpError).clamp((FLOAT) RDP_ERROR_MIN, (FLOAT) RDP_ERROR_MAX);
             PreprocessModes ppMode = PreprocessMode;
             List<VECTOR> inPts = _points;
 
@@ -269,7 +274,7 @@ namespace burningmime.curves.sample
             }
         }
 
-        private void clearAndDrawSpline(IEnumerable<CubicBezier> curves)
+        private void clearAndDrawSpline(IEnumerable<CubicBezier> curves, bool colorize)
         {
             try
             {
@@ -301,7 +306,7 @@ namespace burningmime.curves.sample
                         float u = i * ratio;
                         Spline.SamplePos pos = _spline.GetSamplePosition(u);
                         VECTOR p = _spline.Curves[pos.Index].Sample(pos.Time);
-                        Brush brush = _partBrushes[pos.Index % _partBrushes.Length];
+                        Brush brush = colorize ? _partBrushes[pos.Index % _partBrushes.Length] : _partBrushes[0];
                         drawPoint(ctx, p, brush, DEFAULT_POINT_RADIUS);
                     }
                 }
