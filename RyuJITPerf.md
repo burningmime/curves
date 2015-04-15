@@ -9,9 +9,9 @@ OK, graph first (courtesy of [ChartGo](http://www.chartgo.com/)):
 * Intel Core i7-2600K @ 3.4 GhZ (stock)
 * Windows 8.1 Pro x64 (Build 9600)
 * Old JIT was the .NET 4.5 JIT
-* New JIT was [RyuJIT CTP5 version launched Oct 2014](http://blogs.msdn.com/b/clrcodegeneration/archive/2014/10/31/ryujit-ctp5-getting-closer-to-shipping-and-with-better-simd-support.aspx))
-* Numbers are an average of 3 test sessions (they were quite stable)
-* Each session consisted of 3000 iterations per pair of (RDP error, fit error) parameters, for a total of 45000 iterations (see the raw data below for the breadown)
+* New JIT was [RyuJIT CTP5 version launched Oct 2014](http://blogs.msdn.com/b/clrcodegeneration/archive/2014/10/31/ryujit-ctp5-getting-closer-to-shipping-and-with-better-simd-support.aspx)
+* Numbers are an average of 3 test sessions
+* Each session consisted of 3000 iterations per pair of (RDP error, fit error) parameters, for a total of 45000 iterations (see the raw data below for the breakdown)
 * [Source code for test program](/burningmime.curves.perftest/src/Program.cs)
 * [Batch file I used to run it with different configs](/runtests.bat)
 
@@ -21,13 +21,11 @@ Same as the sample app shows on startup. Fitting Bezier curves to these 966 poin
 
 ![ryujit-perf-testdata-original.png](/images/ryujit-perf-testdata-original.png?raw=true)
 
-With RDP error = 2 and Fit Error = 8, the results look like:
+With RDP error = 2 and Fit Error = 8, the results look like (colors separate different curves):
 
 ![ryujit-perf-testdata-fit.png](/images/ryujit-perf-testdata-fit.png?raw=true)
 
 **Results:**
-
-*(The raw data is included at the end of the file if you want to look)*
 
 |JIT Version             | Average time (seconds) | Speedup                                                     |
 |------------------------|-----------------------:|-------------------------------------------------------------|
@@ -35,83 +33,39 @@ With RDP error = 2 and Fit Error = 8, the results look like:
 | RyuJIT CTP5 no SIMD    | 18.540                 | 1.1x faster than old JIT                                    |
 | RyuJIT CTP5 with SIMD  | 5.952                  | 3.4x faster than old JIT, 3.1x faster than new JIT w/o SIMD |
 
-It's not without its bugs (I found [one while writing this app](https://connect.microsoft.com/VisualStudio/feedback/details/1199670/ryujit-ctp5-sse-methodimpl-methodimploptions-aggressiveinlining-causes-bad-codegen-in-certain-cases)),
+It's not without its share of bugs (I found [one while writing this app](https://connect.microsoft.com/VisualStudio/feedback/details/1199670/ryujit-ctp5-sse-methodimpl-methodimploptions-aggressiveinlining-causes-bad-codegen-in-certain-cases)),
 but the performance of the SIMD is stellar -- more than a 3x speed up over the scalar version, despite the fact that it's only using 2-component vectors max. I'd love to see some results for other processors/systems...
-maybe Core i7 just has a good SSE unit. Unfortunately, setting up RyuJIT is still a pain in the area, so I'm not going to badger everyone I know to run tests on their PCs.
+maybe Core i7 just has a good SSE unit? Unfortunately, setting up RyuJIT is still a pain in the area, so I'm not going to badger everyone I know to run tests on their PCs.
 
-### Why?
+The first interesting thing to note while profiling is that in the non-SIMD version, the RDP step is only 9% of the total time, while in the SIMD version, it represents 33% of the time:
 
-The theoretical maximum advantage you could get simply through the parallelization aspect would be 2x since it only uses Vector2s and no larger vector types. It *could* be packing two Vector2s into one
-XMM register, but none of the disassembly I've looked at has been doing that. Another possibility (which appears true) is that it uses (and therefore spills) fewer registers. Can this account for the 3x
-speedup? Maybe.
+[ryujit-perf-profile-1.png](/images/ryujit-perf-profile-1.png?raw=true)
 
-From what I can tell, it seems the SIMD version is sometimes longer. For example,
-a very simple call to `Distance` in [CurvePreprocess.RdpRecursive](https://github.com/burningmime/curves/blob/7941812bc3f5a15e3a053fa10ec7db4a2dd1318c/burningmime.curves/src/CurvePreprocess.cs#L158)
-yields this with SIMD off and the RyuJIT CTP5:
+This likely means it's not easy to vectorize, which makes sense because the thing that takes most of the time (perpendicular distance of a point to a line) is mostly scalar math.
+I tried various tricks to make it more vector-friendly, but these all ended up with worse performance. Other than rewriting the loop to handle multiple points at once, I'm not 
+sure what I could do here. 
 
-```assembly
- movss       xmm0,dword ptr [rsp+48h]  
- movss       xmm2,dword ptr [rsp+4Ch]  
- movss       xmm3,dword ptr [rsp+40h]  
- movss       xmm4,dword ptr [rsp+44h]  
- xorps       xmm5,xmm5  
- movss       dword ptr [rsp+30h],xmm5  
- xorps       xmm5,xmm5  
- movss       dword ptr [rsp+34h],xmm5  
- subss       xmm0,xmm3  
- subss       xmm2,xmm4  
- mulss       xmm0,xmm0  
- mulss       xmm2,xmm2  
- addss       xmm0,xmm2  
- cvtss2sd    xmm0,xmm0  
- sqrtsd      xmm0,xmm0  
- cvtsd2ss    xmm0,xmm0  
- movss       xmm6,xmm0  
-```
+A few other interesting things I picked up while profiling/optimizing:
 
-Yes, this is SIMD off. The new JIT uses XMM registers for floats even without FeatureSIMD. And this is the ugly mess produced with SIMD on:
+* The selection of what functions to inline by the JIT is way too conservative. Adding [MethodImpl(MethodImplOptions.AggressiveInlining)] to
+[PerpendicularDistance](/burningmime.curves/src/CurvePreprocess.cs#L191) made a ~18-20% (!!!) speedup in RdpReduce() function performance.
+* Lists are about 2-3% slower than arrays. I'm using lists so that CurveBuilder and CurveFit can share code.
+* Allocations, even big lists/resizing, are essentially free in comparison to computation. Switching to a thread-local pre-allocated list for the temporary one used in RdpReduce had zero
+effect on performance. This goes against traditional performance rhetoric of "avoid garbage collection at all costs", but I guess there are so few (and the memory is so
+easily reused) it doesn't have any impact at all. List.Add() almost never shows up in the profile at all.
+* The order of instructions definitely matters. We like to pretend that the C# code is so abstracted from the machine and "the JIT will take care of it" but re-ordering
+a couple lines of code in [GenerateBezier](/burningmime.curves/src/CurveFitBase.cs#L266) gave a 1.5-2% increase in overall performance.
+* In general, MSIL that the C# compiler generates is pretty much a direct translation of the C# code, with no reordering or removing of redundant stores, etc.
+This makes it easy to debug, and means that any optimizations are left to the JIT.
+* System.Windows.Vector (meaning we use doubles instead of floats) clocks in at an impressive ~14 seconds. This means it's *faster* than System.Numerics.Vector without SIMD. Since System.Windows.Vector
+doesn't have the correct annotations, it doesn't benefit at all from FeatureSIMD.
 
-```assembly
- movss       xmm0,dword ptr [rsp+68h]  
- movss       dword ptr [rsp+50h],xmm0  
- movss       xmm0,dword ptr [rsp+6Ch]  
- movss       dword ptr [rsp+54h],xmm0  
- movss       xmm0,dword ptr [rsp+60h]  
- movss       dword ptr [rsp+48h],xmm0  
- movss       xmm0,dword ptr [rsp+64h]  
- movss       dword ptr [rsp+4Ch],xmm0  
- movsd       xmm0,mmword ptr [rsp+50h]  
- movsd       mmword ptr [rsp+40h],xmm0  
- movsd       xmm0,mmword ptr [rsp+48h]  
- movsd       mmword ptr [rsp+38h],xmm0  
- xorps       xmm0,xmm0  
- movsd       mmword ptr [rsp+30h],xmm0  
- movsd       xmm0,mmword ptr [rsp+40h]  
- movsd       xmm2,mmword ptr [rsp+38h]  
- subps       xmm0,xmm2  
- movsd       mmword ptr [rsp+30h],xmm0  
- movsd       xmm0,mmword ptr [rsp+30h]  
- movsd       xmm2,mmword ptr [rsp+30h]  
- mulps       xmm0,xmm2  
- movaps      xmm3,xmm0  
- shufps      xmm3,xmm3,0B1h  
- addps       xmm0,xmm3  
- movaps      xmm3,xmm0  
- shufps      xmm3,xmm3,1Bh  
- addps       xmm0,xmm3  
- cvtss2sd    xmm0,xmm0  
- sqrtsd      xmm0,xmm0  
- cvtsd2ss    xmm0,xmm0  
- movss       xmm6,xmm0  
-```
+As for *why* SIMD is so much better, I [asked on Reddit](http://www.reddit.com/r/programming/comments/32jsyc/the_new_net_ryujit_with_simd_achieved_over_a_3x/) and got a variety of interesting responses.
+There's quite a lot going on at the CPU level that looking at the just the AMD64 disassembly won't show (in terms of pipelining, etc). All this is dependent on the CPU implementation, so an AMD CPU or even
+an Intel in a different generation could perform totally differently. The main takeaway from all this seems to be that even looking at disassembled machine code isn't much of a clue to how well something will
+perform in practice. It's been an interesting learning experience, though, since I've never worked anywhere this close to the processor in any real-life jobs.
 
-Basically it seems like it moves everything into place so that it can do some aligned reads then
-use the parallel versions of the instructions. And this fervid juggling of registers isn't an isolated artifact of this function -- other functions 
-that call Distance() are greeted with similar code. In each case, the SIMD one is much longer with lots of unnecessary spilling of things to the stack 
-then picking them up again. I'd expect on the CPU level, all of this is in cache or hardware registers, but it's still more instructions. Maybe the microcode...
-instruction-level parallelism... ah, I give up! I'll leave the figurins to people smarter than me. The SIMD version is more than 3x as fast, which is good enough for me.
-
-**tl;dr:** [It makes no sense!](https://www.youtube.com/watch?v=xwdba9C2G14)
+Oh, and fair play Microsoft -- RyuJIT SIMD is incredible.
 
 ### Appendix: Raw test results
 

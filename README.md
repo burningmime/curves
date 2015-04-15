@@ -1,5 +1,7 @@
 # curves
 
+## This has some bugs in it currently and should not be used for anything ever!
+
 ### Summary
 
 This is a C# implementation of Philip J. Schneider's least-squares method for fitting Bézier  curves to a set of input data points, as well as several helper routines/classes to work with Bézier  curves.
@@ -12,9 +14,9 @@ Say you have a bunch of input points like this (ie from a touchscreen or drawn b
 
 ![readme-example-original.png](/images/readme-example-original.png?raw=true)
 
-This seems to form a an "S" shape. However, there's a bit of jitter visible (maybe the person drawing it had too much coffee -- most hand-drawn lines/shapes look a lot
-worse than this). Maybe you want to smooth it out to display a nice line on the user's phone? More importantly, these points aren't evenly spaced and are generally quite difficult
-to work with programmatically. We need to transform this data into a format a computer can easily work with. The answer is [Bézier  curves](http://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+This seems to form a an "S" shape. However, there's a bit of jitter visible, so if you're displaying it you might want to smooth it out.
+More importantly, these points aren't evenly spaced and are generally quite difficult to work with programmatically. We need to transform this
+data into a format a computer can easily work with. The answer is [Bézier  curves](http://en.wikipedia.org/wiki/B%C3%A9zier_curve).
 
 How do we get a curve that approximates the data? The first step (optional, but highly recommended) is to remove some of the excess points. The most common method of doing this 
 is the [Ramer-Douglas-Pueker algorithm](http://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm). After running it, the input data looks like:
@@ -45,7 +47,7 @@ TODO: link to a compiled binary, and maybe a video of the app in action?
 
 ### Getting the code to work with your project
 
-This is not meant to be a library you compile into a DLL and link to typically. Because there are so many different Vector types flying around, it's easiest just to copy the source code
+This is not meant to be a library you compile into a DLL and link to. Because there are so many different Vector types flying around, it's easiest just to copy the source code
 from the `trunk\burningmime.curves\src` folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
 
 ```C#
@@ -68,20 +70,24 @@ of each file. In Unity you should add UNITY to the global custom defines in the 
 
 If you're using VB.Net, F#, or another .NET language, you'll need to compile it with the correct Vector type and reference the compiled DLL.
 
-You can very easily add support for new vector types (assuming it has overloaded operators) by modifying `VectorHelper.cs`. For example, `SharpDX.Vector2` and
-`Microsoft.Xna.Framework.Vector2` are trivial to add since they use the same interface as `System.Numerics.Vector2`. I haven't looked into WinRT much 
-but it might have a vector type similar to `System.Windows.Vector` (WPF).
+You can very easily add support for new vector types (assuming it has overloaded operators) by modifying [VectorHelper.cs](/burningmime.curves/src/VectorHelper.cs). For example, SharpDX.Vector2 and
+Microsoft.Xna.Framework.Vector2 are trivial to add since they use the same interface as System.Numerics.Vector2. I haven't looked into WinRT much 
+but it might have a vector type similar to System.Windows.Vector (WPF).
 
 ### Using the code
 
 See the code documentation for usage info on the specific functions. The most important ones are the ones demonstrated above -- `CurvePreprocess.RdpReduce` to simplify input
-data and `CurveFit.Fit` to fit curves to the data. You don't need to pre-process the input data, but it will fail if the input data contains repeated data points, so you should
-at least call `CurvePreprocess.RemoveDuplicates` before doing the curve fit.
+data and `CurveFit.Fit` to fit curves to the data. You don't need to pre-process the input data, but it will fail if the input data contains repeated data points, so you must
+at least call `CurvePreprocess.RemoveDuplicates` before doing the curve fit if you suspect the input data might have duplicates.
 
 The parameters are tuneable based on your use case. I recommend playing around with the sample app for a bit to get a feel for exactly how the parameters and pre-processing methods
-work.
+work. This will give a much better explanation than I could.
 
-TODO: document the spline, builder, etc here.
+Included is also a CurveBuilder class which lets you incrementally add points and update curves as they come in. It uses its own pre-processing method (ignoring all points that
+are too close the previous one, basically) and splits the final curve when it no longer fits the input data. This is useful if you want to build curves "as you go" rather than fitting
+all at once, but isn't suitable for displaying to the user without some massaging first since it's still a bit jumpy.
+
+TODO document SPline
 
 ### Enabling SIMD
 
