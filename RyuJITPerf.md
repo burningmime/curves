@@ -39,7 +39,7 @@ maybe Core i7 just has a good SSE unit? Unfortunately, setting up RyuJIT is stil
 
 The first interesting thing to note while profiling is that in the non-SIMD version, the RDP step is only 9% of the total time, while in the SIMD version, it represents 33% of the time:
 
-[ryujit-perf-profile-1.png](/images/ryujit-perf-profile-1.png?raw=true)
+![ryujit-perf-profile-1.png](/images/ryujit-perf-profile-1.png?raw=true)
 
 This likely means it's not easy to vectorize, which makes sense because the thing that takes most of the time (perpendicular distance of a point to a line) is mostly scalar math.
 I tried various tricks to make it more vector-friendly, but these all ended up with worse performance. Other than rewriting the loop to handle multiple points at once, I'm not 
