@@ -353,8 +353,9 @@ namespace burningmime.curves
                 // We can't just use .X and .Y because Unity uses lower-case "x" and "y".
                 FLOAT num = ((VectorHelper.GetX(p0) - VectorHelper.GetX(p)) * VectorHelper.GetX(p1)) + ((VectorHelper.GetY(p0) - VectorHelper.GetY(p)) * VectorHelper.GetY(p1));
                 FLOAT den = (VectorHelper.GetX(p1) * VectorHelper.GetX(p1)) + (VectorHelper.GetY(p1) * VectorHelper.GetY(p1)) + ((VectorHelper.GetX(p0) - VectorHelper.GetX(p)) * VectorHelper.GetX(p2)) + ((VectorHelper.GetY(p0) - VectorHelper.GetY(p)) * VectorHelper.GetY(p2));
-                if(Math.Abs(den) > EPSILON)
-                    u[i] = t - num/den;
+                FLOAT newU = t - num/den;
+                if(Math.Abs(den) > EPSILON && newU >= 0 && newU <= 1)
+                    u[i] = newU;
             }
         }
 

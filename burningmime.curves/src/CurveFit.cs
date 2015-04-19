@@ -46,13 +46,15 @@ namespace burningmime.curves
         private static readonly CubicBezier[] NO_CURVES = new CubicBezier[0];
 
         /// <summary>
-        /// Attempts to fit a set of Bezier curves to the given data. Throws exceptions on bad data, so you might
-        /// want to wrap any calls to this in a try/catch. This may fail for points that are REALLY close together
-        /// since it uses a fairly large epsilon and error must be >= 1. It returns a set of curves that form a 
+        /// Attempts to fit a set of Bezier curves to the given data. It returns a set of curves that form a 
         /// http://en.wikipedia.org/wiki/Composite_B%C3%A9zier_curve with C1 continuity (that is, each curve's start
         /// point is coincident with the previous curve's end point, and the tangent vectors of the start and end
-        /// points are going in the same direction, so the curves will join up smoothly). Might return an empty list
-        /// if fitting failed.
+        /// points are going in the same direction, so the curves will join up smoothly). Returns an empty array
+        /// if less than two points in input.
+        /// 
+        /// Input data MUST not contain repeated points (that is, the same point twice in succession). The best way to
+        /// ensure this is to call any one of the methods in <see cref="CurvePreprocess" />, since all three pre-processing
+        /// methods will remove duplicate points. If repeated points are encountered, unexpected behavior can occur.
         /// </summary>
         /// <param name="points">Set of points to fit to.</param>
         /// <param name="maxError">Maximum distance from any data point to a point on the generated curve.</param>

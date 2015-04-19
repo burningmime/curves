@@ -1,7 +1,5 @@
 # curves
 
-## This has some bugs in it currently and should not be used for anything ever!
-
 ### Summary
 
 This is a C# implementation of Philip J. Schneider's least-squares method for fitting Bézier  curves to a set of input data points, as well as several helper routines/classes to work with Bézier  curves.
@@ -47,7 +45,7 @@ TODO: link to a compiled binary, and maybe a video of the app in action?
 
 ### Getting the code to work with your project
 
-This is not meant to be a library you compile into a DLL and link to. Because there are so many different Vector types flying around, it's easiest just to copy the source code
+This is not meant to be a library you compile into a DLL and link to (if you're using C#). Because there are so many different Vector types flying around, it's easiest just to copy the source code
 from the `trunk\burningmime.curves\src` folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
 
 ```C#
