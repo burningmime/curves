@@ -45,6 +45,8 @@ Neat, huh?
 
 [ZIP file with compiled demo project](/curves-example-bin.zip?raw=true) (NOTE: this requires .NET framework version 4.5 or higher)
 
+[Musings about performance with RyuJIT and SIMD](/RyuJITPerf.md) (tl;dr: 3.4x speed-up with SIMD on!)
+
 ### Getting the code to work with your project
 
 This is not meant to be a library you compile into a DLL and link to (if you're using C#). Because there are so many different Vector types flying around, it's easiest just to copy the source code

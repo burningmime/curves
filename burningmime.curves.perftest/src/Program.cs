@@ -1,4 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using burningmime.curves.sample;
+
 #if SYSTEM_WINDOWS_VECTOR
 using VECTOR = System.Windows.Vector;
 using FLOAT = System.Double;
@@ -12,13 +17,7 @@ using FLOAT = System.Single;
 #error Unknown vector type -- must define one of SYSTEM_WINDOWS_VECTOR, SYSTEM_NUMERICS_VECTOR or UNITY
 #endif
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using burningmime.curves.sample;
-
 // ReSharper disable PossibleNullReferenceException
-
 namespace burningmime.curves.perftest
 {
     public static class Program
