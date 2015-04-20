@@ -30,8 +30,8 @@
       <Property name="PreprocessMode" type="PreprocessModes" notify="onPreprocessModeChanged" default="PreprocessModes.RDP">Mode used to preprocess the points.</Property>
       <Property name="RenderMode" type="RenderModes" notify="onRenderModeChanged" default="RenderModes.WPF_DRAW">Mode used to render the points.</Property>
       <Property name="PointDistance" type="double" notify="onPointDistanceChanged" default="DEFAULT_POINT_DIST">Distance between points for Linearization preprocessing.</Property>
-      <Property name="RdpError" type="double" notify="onPointDistanceChanged" default="DEFAULT_RDP_ERROR">Maximum error for RDP reduction algorithm.</Property>
-      <Property name="FittingError" type="double" notify="onErrorChanged" default="DEFAULT_FIT_ERROR">Maximum error for fitting algorithm.</Property>
+      <Property name="RdpError" type="double" notify="onRdpErrorChanged" default="DEFAULT_RDP_ERROR">Maximum error for RDP reduction algorithm.</Property>
+      <Property name="FittingError" type="double" notify="onFitErrorChanged" default="DEFAULT_FIT_ERROR">Maximum error for fitting algorithm.</Property>
       <Property name="LastFitTime" type="double" default="double.NaN">Time (in milliseconds) of last operation, or NaN if no info.</Property>
       <Property name="PointCount" type="string" default="string.Empty"># of points before/after preprocessing</Property>
       <Property name="ShowCurveColors" type="bool" notify="onColorizeChanged" default="true">Should curves have different colors when displayed?</Property>

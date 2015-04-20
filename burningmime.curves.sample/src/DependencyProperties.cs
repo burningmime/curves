@@ -108,14 +108,15 @@ namespace burningmime.curves.sample
         /// Maximum error for RDP reduction algorithm.
         /// </summary>
         public double RdpError { get { return (double) GetValue(RdpErrorProperty); } set { SetValue(RdpErrorProperty, value); } }
-        public static readonly DependencyProperty<double> RdpErrorProperty = DependencyProperty.Register("RdpError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_RDP_ERROR, onPointDistanceChangedInternal)).of<double>();
+        public static readonly DependencyProperty<double> RdpErrorProperty = DependencyProperty.Register("RdpError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_RDP_ERROR, onRdpErrorChangedInternal)).of<double>();
+        private static void onRdpErrorChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onRdpErrorChanged(); }
         
         /// <summary>
         /// Maximum error for fitting algorithm.
         /// </summary>
         public double FittingError { get { return (double) GetValue(FittingErrorProperty); } set { SetValue(FittingErrorProperty, value); } }
-        public static readonly DependencyProperty<double> FittingErrorProperty = DependencyProperty.Register("FittingError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_FIT_ERROR, onErrorChangedInternal)).of<double>();
-        private static void onErrorChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onErrorChanged(); }
+        public static readonly DependencyProperty<double> FittingErrorProperty = DependencyProperty.Register("FittingError", typeof(double), typeof(DrawingSurface), new PropertyMetadata(DEFAULT_FIT_ERROR, onFitErrorChangedInternal)).of<double>();
+        private static void onFitErrorChangedInternal(DependencyObject obj, DependencyPropertyChangedEventArgs args) { ((DrawingSurface) obj).onFitErrorChanged(); }
         
         /// <summary>
         /// Time (in milliseconds) of last operation, or NaN if no info.

@@ -39,14 +39,16 @@ It also includes a WPF sample project so you can try this out for yourself and s
 
 Neat, huh?
 
-### See for yourself
+### See and try for yourself
 
-TODO: link to a compiled binary, and maybe a video of the app in action?
+[YouTube video of demo project in action](https://www.youtube.com/watch?v=GxkMrytqM6M)
+
+[ZIP file with compiled demo project](/curves-example-bin.zip?raw=true) (NOTE: this requires .NET framework version 4.5 or higher)
 
 ### Getting the code to work with your project
 
 This is not meant to be a library you compile into a DLL and link to (if you're using C#). Because there are so many different Vector types flying around, it's easiest just to copy the source code
-from the `trunk\burningmime.curves\src` folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
+from the [burningmime.curves/src](/burningmime.curves/src) folder directly into your project. You'll notice at the top of every file there, there's a very C-like construct:
 
 ```C#
 #if SYSTEM_WINDOWS_VECTOR
@@ -75,17 +77,24 @@ but it might have a vector type similar to System.Windows.Vector (WPF).
 ### Using the code
 
 See the code documentation for usage info on the specific functions. The most important ones are the ones demonstrated above -- `CurvePreprocess.RdpReduce` to simplify input
-data and `CurveFit.Fit` to fit curves to the data. You don't need to pre-process the input data, but it will fail if the input data contains repeated data points, so you must
-at least call `CurvePreprocess.RemoveDuplicates` before doing the curve fit if you suspect the input data might have duplicates.
+data and `CurveFit.Fit` to fit curves to the data. You don't *need* to pre-process the input data before calling `CurveFit.Fit`, but the input data MUST NOT contain any repeated
+points (one point after another that's exactly the same) or undefined behavior can occur (probably returning some stuff with NaN values). Both the RDP and Linearize methods of pre-processing
+will remove duplicates, but you can call `CurvePreprocess.RemoveDuplicates` if you're not doing wither of the other pre-processing methods and are concerned there might be duplicates.
 
-The parameters are tuneable based on your use case. I recommend playing around with the sample app for a bit to get a feel for exactly how the parameters and pre-processing methods
-work. This will give a much better explanation than I could.
+The parameters are tuneable based on your use case. I recommend playing around with [the sample app](/curves-example-bin.zip?raw=true) for a bit to get a feel for exactly 
+how the parameters and pre-processing methods work. This will give a much better explanation than I could. Note the red text in the bottom-right: this shows you how long the
+fit operation took, which will help you make decisions base don performance. Generally, the "fit error" parameter doesn't make nearly as much difference in terms of performance as
+the number of input points does. Fit error instead helps determine how smooth the generated curves will be.
 
 Included is also a CurveBuilder class which lets you incrementally add points and update curves as they come in. It uses its own pre-processing method (ignoring all points that
 are too close the previous one, basically) and splits the final curve when it no longer fits the input data. This is useful if you want to build curves "as you go" rather than fitting
 all at once, but isn't suitable for displaying to the user without some massaging first since it's still a bit jumpy.
 
-TODO document SPline
+Finally, there's a [Spline](/burningmime.curves/src/Spline.cs) class, which isn't actually a spline, but instead just a simple way to re-parameterize a composite curve with C1 continuity so that it can be sampled in a linear
+fashion. That is, if you call `Spline.Sample(0.5)`, you'll get a point roughly halfway down the spline. This lets you animate things "moving along" the curves without them speeding up/slowing
+down randomly, and is also helpful for rendering it. [See this for an explanation of the problem that this class is helpful in solving](http://www.gamedev.net/topic/544864-bezier-curve-and-constant-speeds/).
+The Spline class is a fair bit simpler than [David Eberly's Method](http://www.geometrictools.com/Documentation/MovingAlongCurveSpecifiedSpeed.pdf), but with the advantage that it's a faster after the
+initial setup time and less prone to floating point instability. It uses linear interpolation to find a good parameter value then samples a specific point on the curve.
 
 ### Enabling SIMD
 

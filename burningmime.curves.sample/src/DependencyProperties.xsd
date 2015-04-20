@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="zeal.ui.DependencyProperties"
-    targetNamespace="zeal.ui.DependencyProperties"
+<xs:schema id="burningmime.util.wpf.DependencyProperties"
+    targetNamespace="burningmime.util.wpf.DependencyProperties"
     elementFormDefault="qualified"
-    xmlns="zeal.ui.DependencyProperties"
+    xmlns="burningmime.util.wpf.DependencyProperties"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:simpleType name="AccessLevel">
@@ -32,6 +32,7 @@
                             <xs:attribute name="default" use="optional" type="xs:string" />
                             <xs:attribute name="metadata" use="optional" type="xs:string" />
                             <xs:attribute name="notify" use="optional" type="xs:string" />
+                            <xs:attribute name="annotations" use="optional" type="xs:string" />
                             <xs:attribute name="attached" use="optional" type="xs:boolean" />
                             <xs:attribute name="passargs" use="optional" type="xs:boolean" />
                             <xs:attribute name="readonly" use="optional" type="xs:boolean" />

@@ -132,10 +132,11 @@ namespace burningmime.curves.sample
 
         // When one of these properties changes, redo the fit/render if the property applies to the current render mode
         private void onRenderModeChanged() { doRender(); }
-        private void onErrorChanged() { if(RenderMode >= RenderModes.CONTROL_POINTS) doRender(); }
-        private void onPointDistanceChanged() { if(RenderMode >= RenderModes.PREPROCESS) doRender(); }
+        private void onFitErrorChanged() { if(RenderMode >= RenderModes.CONTROL_POINTS) doRender(); }
+        private void onRdpErrorChanged() { if(RenderMode >= RenderModes.PREPROCESS && PreprocessMode == PreprocessModes.RDP) doRender(); }
+        private void onPointDistanceChanged() { if(RenderMode >= RenderModes.PREPROCESS && PreprocessMode == PreprocessModes.LINEAR) doRender(); }
         private void onPreprocessModeChanged() { if(RenderMode >= RenderModes.PREPROCESS) doRender(); }
-        private void onColorizeChanged() { if(RenderMode >= RenderModes.CONTROL_POINTS) doRender(); }
+        private void onColorizeChanged() { if(RenderMode >= RenderModes.SPLINE_DRAW) doRender(); }
 
         private void addPoint(Point p)
         {
