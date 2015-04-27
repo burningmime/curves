@@ -63,7 +63,9 @@ namespace burningmime.curves
         /// </summary>
         /// <param name="t">Time value at which to sample (should be between 0 and 1, though it won't fail if outside that range).</param>
         /// <returns>Sampled point.</returns>
+        #if !UNITY
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        #endif
         public VECTOR Sample(FLOAT t)
         {
             FLOAT ti = 1 - t;
@@ -79,7 +81,9 @@ namespace burningmime.curves
         /// </summary>
         /// <param name="t">Time value at which to sample (should be between 0 and 1, though it won't fail if outside that range).</param>
         /// <returns>First derivative of curve at sampled point.</returns>
+        #if !UNITY
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        #endif
         public VECTOR Derivative(FLOAT t)
         {
             FLOAT ti = 1 - t;
@@ -94,7 +98,9 @@ namespace burningmime.curves
         /// </summary>
         /// <param name="t">Time value at which to sample (should be between 0 and 1, though it won't fail if outside that range).</param>
         /// <returns>Direction the curve is going at that point.</returns>
+        #if !UNITY
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        #endif
         public VECTOR Tangent(FLOAT t)
         {
             return VectorHelper.Normalize(Derivative(t));
@@ -151,7 +157,9 @@ namespace burningmime.curves
         {
             private int _current;
 
+            #if !UNITY
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            #endif
             public void Mixin(int hash)
             {
                 unchecked
@@ -168,7 +176,9 @@ namespace burningmime.curves
                 }
             }
 
+            #if !UNITY
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            #endif
             public int GetValue()
             {
                 unchecked

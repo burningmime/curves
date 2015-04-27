@@ -138,7 +138,9 @@ namespace burningmime.curves
         /// </summary>
         public FLOAT Length
         {
+            #if !UNITY
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            #endif
             get
             {
                 List<FLOAT> arclen = _arclen;
