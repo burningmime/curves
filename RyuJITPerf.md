@@ -4,6 +4,26 @@ OK, graph first (courtesy of [ChartGo](http://www.chartgo.com/)):
 
 ![ryujit-perf-chart-0.png](/images/ryujit-perf-chart-0.png?raw=true)
 
+**What was being tested:**
+
+Fitting Bezier curves to these 966 points:
+
+![ryujit-perf-testdata-original.png](/images/ryujit-perf-testdata-original.png?raw=true)
+
+With RDP error = 2 and Fit Error = 8, the results look like (colors separate different curves):
+
+![ryujit-perf-testdata-fit.png](/images/ryujit-perf-testdata-fit.png?raw=true)
+
+The code being run is scattered in these files:
+
+* [CurveFitBase.cs](/burningmime.curves/src/CurveFitBase.cs) (most of the interesting stuff is here!)
+* [CurveFit.cs](/burningmime.curves/src/CurveFit.cs)
+* [CurvePreprocess.cs](/burningmime.curves/src/CurvePreprocess.cs)
+* [CubicBezier.cs](/burningmime.curves/src/CubicBezier.cs)
+* [VectorHelper.cs](/burningmime.curves/src/VectorHelper.cs) (mostly wrapper functions to paper over API differences in vector types; these should all be inlined away)
+
+This isn't just a benchmark to show off vectorization -- there's a lot going on here! Lists, sorting, recursion, scalar math, vector math, branches galore...
+
 **Test environment:**
 
 * Intel Core i7-2600K @ 3.4 GhZ (stock)
@@ -14,16 +34,6 @@ OK, graph first (courtesy of [ChartGo](http://www.chartgo.com/)):
 * Each session consisted of 3000 iterations per pair of (RDP error, fit error) parameters, for a total of 45000 iterations (see the raw data below for the breakdown)
 * [Source code for test program](/burningmime.curves.perftest/src/Program.cs)
 * [Batch file I used to run it with different configs](/runtests.bat)
-
-**Test data:**
-
-Same as the sample app shows on startup. Fitting Bezier curves to these 966 points:
-
-![ryujit-perf-testdata-original.png](/images/ryujit-perf-testdata-original.png?raw=true)
-
-With RDP error = 2 and Fit Error = 8, the results look like (colors separate different curves):
-
-![ryujit-perf-testdata-fit.png](/images/ryujit-perf-testdata-fit.png?raw=true)
 
 **Results:**
 
@@ -48,7 +58,7 @@ sure what I could do here.
 A few other interesting things I picked up while profiling/optimizing:
 
 * The selection of what functions to inline by the JIT is way too conservative. Adding [MethodImpl(MethodImplOptions.AggressiveInlining)] to
-[PerpendicularDistance](/burningmime.curves/src/CurvePreprocess.cs#L191) made a ~18-20% (!!!) speedup in RdpReduce() function performance.
+[PerpendicularDistance](/burningmime.curves/src/CurvePreprocess.cs#L191) made a **18-20% speedup** in RdpReduce() function performance.
 * Lists are about 2-3% slower than arrays. I'm using lists so that CurveBuilder and CurveFit can share code.
 * Allocations, even big lists/resizing, are essentially free in comparison to computation. Switching to a thread-local pre-allocated list for the temporary one used in RdpReduce had zero
 effect on performance. This goes against traditional performance rhetoric of "avoid garbage collection at all costs", but I guess there are so few (and the memory is so
