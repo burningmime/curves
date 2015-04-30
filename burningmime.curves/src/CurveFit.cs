@@ -42,11 +42,24 @@ namespace burningmime.curves
     /// </summary>
     public sealed class CurveFit : CurveFitBase
     {
+
+#if !UNITY
         /// <summary>
         /// Use a thread-static instance to prevent multithreading issues without needing to re-allocate on each run.
-        /// TODO: test if this works correctly in Unity.
         /// </summary>
         [ThreadStatic] private static CurveFit _instance;
+
+        private static CurveFit GetInstance()
+        {
+            return _instance ?? (_instance = new CurveFit());
+        }
+#else
+        private static CurveFit GetInstance()
+        {
+            // Unity doesn't like [ThreadStatic] according to http://docs.unity3d.com/Manual/Attributes.html
+            return new CurveFit();
+        }
+#endif
 
         /// <summary>
         /// Private constructor so it can't be constructed externally.
@@ -86,11 +99,7 @@ namespace burningmime.curves
             if(points.Count < 2)
                 return NO_CURVES; // need at least 2 points to do anything
 
-            // get a pre-allocated instance
-            if(_instance == null)
-                _instance = new CurveFit();
-            CurveFit instance = _instance;
-            
+            CurveFit instance = GetInstance();
             try
             {
                 // should be cleared after each run
@@ -109,7 +118,7 @@ namespace burningmime.curves
 
                 // do the actual fit
                 instance.FitRecursive(0, last, tanL, tanR);
-                return _instance._result.ToArray();
+                return instance._result.ToArray();
             }
             finally
             {
