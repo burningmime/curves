@@ -389,7 +389,7 @@ namespace burningmime.util.wpf
         /// <see cref="Dispatcher.CurrentDispatcher"/> always creates a dispatcher if one doesn't exist. Sometimes you don't
         /// want to do that.
         /// </summary>
-        public static Dispatcher currentDispatcher()
+        public static Dispatcher currentDispatcherOrNull()
         {
             return Dispatcher.FromThread(Thread.CurrentThread);
         }

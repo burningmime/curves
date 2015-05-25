@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Threading;
 
 namespace burningmime.util.wpf
@@ -95,7 +96,7 @@ namespace burningmime.util.wpf
         {
             if(value == null)
                 return;
-            _event += (new DelegateWrapper(UiUtils.currentDispatcher(), value)).invoke;
+            _event += (new DelegateWrapper(getDispatcherOrNull(), value)).invoke;
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace burningmime.util.wpf
         {
             if(value == null)
                 return;
-            Dispatcher dispatcher = UiUtils.currentDispatcher();
+            Dispatcher dispatcher = getDispatcherOrNull();
             lock(_removeLock) // because events are intrinsically threadsafe, and dispatchers are thread-local, the only time this lock matters is when removing non-dispatcher events
             {
                 EventHandler<TArgs> evt = _event;
@@ -148,6 +149,15 @@ namespace burningmime.util.wpf
                 evt(sender, args);
         }
 
+        /// <summary>
+        /// <see cref="Dispatcher.CurrentDispatcher"/> will create a dispatcher if there isn't yet one for the current thread.
+        /// We don't want to do this, so this will get a dispatcher if one exists, or return null otherwise.
+        /// </summary>
+        private static Dispatcher getDispatcherOrNull()
+        {
+            return Dispatcher.FromThread(Thread.CurrentThread);
+        }
+
         private sealed class DelegateWrapper
         {
             public readonly TEvent handler;
@@ -161,7 +171,7 @@ namespace burningmime.util.wpf
 
             public void invoke(object sender, TArgs args)
             {
-                if(dispatcher == null || dispatcher == UiUtils.currentDispatcher())
+                if(dispatcher == null || dispatcher == getDispatcherOrNull())
                     _invoke(handler, sender, args);
                 else
                     // ReSharper disable once AssignNullToNotNullAttribute

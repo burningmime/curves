@@ -17,7 +17,7 @@ namespace burningmime.util.wpf
     /// on the UI thread.
     /// 
     /// You can't modify the collection during a callback (on the thread that recieved the callback -- other threads can do whatever they want). This is the
-    /// same as <see cref="ObservableCollection{T}"/>.
+    /// same as <see cref="ObservableCollection{T}"/> -- any code that works with a regular ObservableCollection should continue to work with this one.
     /// </summary>
     [Serializable, DebuggerDisplay("Count = {Count}")]
     public sealed class AsyncObservableCollection<T> : IList<T>, IReadOnlyList<T>, IList, INotifyCollectionChanged, INotifyPropertyChanged, ISerializable
