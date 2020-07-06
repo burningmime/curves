@@ -1,4 +1,8 @@
-# curves
+# This project's new home is https://gitlab.com/burningmime/curves
+
+I am no longer using GitHub. I have left this project here since apparently people still use it, and because it hasn't changed in 4 years. Both the GitHub and GitLab versions have the same code as of now. However, if you find a bug, please submit it to the GitLab version, not here. Thanks!
+
+-------------------------
 
 ### Summary
 
